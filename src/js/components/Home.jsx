@@ -4,59 +4,56 @@ import Clock from "./Clock";
 
 const Home = () => {
 
-	const [ inputValue, setInputValue] = useState("")
-	const [toDos, setTodos] = useState ([]);
+    const [inputValue, setInputValue] = useState("");
+    const [toDos, setTodos] = useState([]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Evita que se regargue todo el rato
+        const trimmedValue = inputValue.trim(); // Para que no se pueda mandar vacío
+        if (trimmedValue !== "") {
+            setTodos(prev => [...prev, trimmedValue]);
+            setInputValue("");
+        }
+    };
 
 
     return (
+
+            
         <div className="container">
-            <Clock></Clock>
+            <div className="clock"> <Clock/> </div>
             <h1>Tareas pendientes</h1>
-            <ul>
-                <li>
-                    <input
-                        type="text"
-                        onChange={(e) => setInputValue(e.target.value)}
-                        value={inputValue}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" && inputValue.trim() !== "") {
-                                setTodos([...toDos, inputValue.trim()]);
-                                setInputValue("");
-                            }
-                        }}
-                        placeholder="¿Qué tienes pendiente?"
-                    />
-                </li>
 
+            <form onSubmit={handleSubmit}> 
+                <input
+                    type="text"
+                    value={inputValue} 
+                    onChange={(e) => setInputValue(e.target.value)} // Captura el texto y lo imprime
+                    placeholder="¿Qué tienes pendiente?"
+                />
+            </form>
+
+            <div className="todo-list">
                 {toDos.length === 0 ? (
-                    <li>
-                        Añade tareas
-                    </li>
+                    <div className="todo-item">Añade tareas</div>
                 ) : (
-                    toDos.map((item, index) => (
-                        <li
-                            key={index}
-
-                        >
+                    toDos.map((item, index) => (                    // Recorre el array
+                        <div key={index} className="todo-item">
                             {item}
                             <i
                                 className="fa-solid fa-xmark delete-icon"
                                 onClick={() =>
-                                    setTodos(toDos.filter((unusedTodo, currentIndex) => index !== currentIndex))
+                                    setTodos(toDos.filter((_, i) => i !== index))   // Crea un nuevo array menos lo que coincide con el index
                                 }
                             />
-                        </li>
+                        </div>
                     ))
                 )}
-            </ul>
-                
-            {toDos.length > 0 && (
-                <div>{toDos.length} tareas pendientes</div>
-            )}
+            </div>
+
+            {toDos.length > 0 && <div className="todo-count">{toDos.length} tareas pendientes</div>}
         </div>
     );
 };
 
 export default Home;
-
-// Creo que es un componente largo, a futuro si fuera un proyecto real lo más eficiente sería dividirlo
